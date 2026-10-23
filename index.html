@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>绝对不要点</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            /* 开启 3D 视角 */
+            perspective: 1000px; 
+        }
+
+        /* 伪装按钮 */
+        #fake-btn {
+            padding: 15px 40px;
+            background: transparent;
+            color: #444;
+            border: 1px solid #222;
+            font-size: 1.2rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        #fake-btn:hover {
+            color: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 吓人的图片层 */
+        #scare-img {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 50vw; 
+            height: 100vh;
+            object-fit: cover;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            
+            /* 初始状态：藏在屏幕极深处 */
+            transform: translate(-50%, -50%) translateZ(-2000px) scale(0.1);
+            transition: transform 0.1s ease-out, opacity 0.1s;
+        }
+
+        /* 👇 3D 砸脸 + 剧烈抽搐特效 👇 */
+        .scare-3d-active {
+            opacity: 1 !important;
+            /* 瞬间冲到眼前，并且旋转角度 */
+            transform: translate(-50%, -50%) translateZ(200px) rotate(5deg) !important;
+            animation: shake3d 0.1s infinite;
+        }
+
+        @keyframes shake3d {
+            0% { transform: translate(-50%, -50%) translateZ(200px) rotate(5deg) translate(2px, 2px); }
+            25% { transform: translate(-50%, -50%) translateZ(150px) rotate(-4deg) translate(-4px, -4px); }
+            50% { transform: translate(-50%, -50%) translateZ(250px) rotate(3deg) translate(4px, -2px); }
+            75% { transform: translate(-50%, -50%) translateZ(180px) rotate(-2deg) translate(-2px, 4px); }
+            100% { transform: translate(-50%, -50%) translateZ(200px) rotate(5deg) translate(2px, 2px); }
+        }
+
+        /* 网卡加载圈层 */
+        #loading-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 20px;
+        }
+        #loading-text {
+            color: #fff; font-size: 1rem; letter-spacing: 2px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
+</head>
+<body>
+
+    <button id="fake-btn">胆小勿入</button>
+
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div id="loading-text">正在重新连接网络...</div>
+    </div>
+
+    <img id="scare-img" src="scare.jpg" alt="Surprise">
+    <audio id="scream-audio" src="scream.mp3"></audio>
+
+    <script>
+        const fakeBtn = document.getElementById('fake-btn');
+        const scareImg = document.getElementById('scare-img');
+        const screamAudio = document.getElementById('scream-audio');
+        const body = document.body;
+        const loadingScreen = document.getElementById('loading-screen'); 
+
+        fakeBtn.addEventListener('click', () => {
+            fakeBtn.style.display = 'none';
+            loadingScreen.style.opacity = '1';
+
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0'; 
+                
+                // 播放音乐
+                screamAudio.volume = 1.0; 
+                screamAudio.play();
+                
+                // 触发图片的 3D 冲脸特效
+                scareImg.classList.add('scare-3d-active');
+                
+                // 背景变红
+                body.style.backgroundColor = '#000000';
+
+                // 停留 2 秒后结束
+                setTimeout(() => {
+                    screamAudio.pause(); 
+                    scareImg.classList.remove('scare-3d-active');
+                    body.style.backgroundColor = '#000';
+                    
+                    const taunt = document.createElement('div');
+                    taunt.innerText = "这都没吓到你";
+                    taunt.style.color = "#ff0000";
+                    taunt.style.fontSize = "2rem";
+                    taunt.style.position = "absolute";
+                    taunt.style.zIndex = "200";
+                    body.appendChild(taunt);
+
+                }, 2000); 
+
+            }, 3500); 
+        });
+    </script>
+</body>
+</html>
